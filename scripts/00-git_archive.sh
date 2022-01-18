@@ -1,0 +1,17 @@
+tag=""
+oDir="/tmp/bib"
+echo "install -d ${oDir}"
+echo "git archive --format=tar --prefix=mg++${tag}/ HEAD | (cd ${oDir}/ && tar xf -)"
+echo "cd ${oDir}/mg++${tag}/"
+echo "git init"
+echo "find . | xargs git add >& /dev/null"
+echo "git commit -m \"Initial commit\" >& /dev/null"
+echo "cd .."
+echo "git clone --bare mg++${tag}"
+echo "cd mg++${tag}.git/"
+echo "git remote remove origin"
+echo "cd .."
+echo "tar czf mg++${tag}_git.tgz mg++${tag}.git"
+
+
+#echo "git archive HEAD --prefix=mg++noscene/ | gzip -c > ${oDir}/mg++_noscene.tgz"

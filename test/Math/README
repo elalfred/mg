@@ -1,0 +1,4 @@
+
+** to compile
+
+$ make TH_DIR=../ MG_DIR=../..
