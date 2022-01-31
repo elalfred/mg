@@ -23,7 +23,15 @@ Line & Line::operator=(const Line & line) {
 
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	Vector3 x= B-A;
+	if (x.isZero()) {
+		printf("error los puntos dados son demasiado proximos (aka son cuasi-iguales) se pondran los valores por defecto origen y vector unitario Y");
+		m_O= Vector3::ZERO;
+		m_d= Vector3::UNIT_Y;
+	}else{
+		m_O=A;
+		m_d=x;
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -32,7 +40,7 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 Vector3 Line::at(float u) const {
 	Vector3 res;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	res*=u;
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
@@ -44,7 +52,8 @@ Vector3 Line::at(float u) const {
 float Line::paramDistance(const Vector3 & P) const {
 	float res = 0.0f;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	Vector3 x= P-m_O;
+	res = m_d.dot(x)/m_d.dot(m_d);
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
@@ -57,7 +66,8 @@ float Line::paramDistance(const Vector3 & P) const {
 float Line::distance(const Vector3 & P) const {
 	float res = 0.0f;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	Vector3 x = P - (m_O + paramDistance(P)*m_d);
+	res= x.length();
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
