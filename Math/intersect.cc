@@ -19,6 +19,7 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	float dist = pl->distance(bs->m_centre);
 	dist-=bs->getRadius();
+	printf ("distancia ---> %f",dist);
 	int respuesta;
 	if (abs(dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
 	else if (dist > Constants::distance_epsilon) respuesta = IREJECT;
@@ -26,7 +27,7 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
 	/* =================== END YOUR CODE HERE ====================== */
 	
-	return IREJECT;
+	return respuesta;
 }
 
 
@@ -37,8 +38,21 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
 int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	float a_xmin = bba->m_min[0];
-	 
+	float coord_a_min , coord_a_max , coord_b_min, coord_b_max;
+	bool interseccion = true;
+	int i=0;
+	while ( interseccion && i!=3){
+		coord_a_min = bba->m_min[i];
+		coord_a_max = bba->m_max[i];
+		coord_b_min = bbb->m_min[i];
+		coord_b_max = bbb->m_max[i];
+		
+		interseccion = (coord_b_min <= coord_a_min && coord_b_max >= coord_a_min) ||
+					   (coord_b_min <= coord_a_max && coord_b_max >= coord_a_max);
+		i++;
+	}
+
+	return (interseccion)? IINTERSECT : IREJECT;
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -50,7 +64,44 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 	/* =================== PUT YOUR CODE HERE ====================== */
+	float max_simil = 0, aux;
+	Vector3 lista_diag[4], temp;
+	lista_diag[0] = (theBBox->m_max - theBBox->m_min);
+	int max= 0;
 
+	//calculo de diagonales y de la más similar a la normal del plano
+	for (int i =0; i<4; i++){
+		temp = lista_diag[0];
+		//calculo y almacenamiento de las diagonales
+		if (i!= 0){
+			temp[i] =  theBBox->m_min[i] - theBBox->m_max[i] ;
+			lista_diag[i] = temp; 
+		}
+		
+		//calculo y almacenamiento de la máxima similitud junto con su indice
+		aux= thePlane->m_n.dot( temp ) ;
+		aux /= (thePlane->m_n.lengthSquare() * temp.lengthSquare());
+		if (  abs(aux)  >  max_simil){
+			max_simil= abs(aux);
+			max= i;
+		}
+	}
+
+	//obtenemos el vector con el angulo más similar a la normal
+	temp = lista_diag[ max ];
+	Vector3 n_max = theBBox->m_max , n_min = theBBox->m_min;
+
+	//se calculan los nuevos puntos correspondientes a la diagonal
+	if (max != 0){
+		n_max[ max ]= n_min[ max ];
+		n_min[ max ]= theBBox->m_max[ max ];
+	}
+	float dist_Pl_min , dist_PL_max;
+
+	dist_Pl_min = thePlane->signedDistance(n_min);
+	dist_PL_max = thePlane->signedDistance(n_max);
+
+	//revisar creo que falta calcular los vertices con respecto al plano
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
