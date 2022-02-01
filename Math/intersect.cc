@@ -17,8 +17,16 @@
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	/* =================== PUT YOUR CODE HERE ====================== */
+	float dist = pl->distance(bs->m_centre);
+	dist-=bs->getRadius();
+	int respuesta;
+	if (abs(dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
+	else if (dist > Constants::distance_epsilon) respuesta = IREJECT;
+	else respuesta = -IREJECT;
 
 	/* =================== END YOUR CODE HERE ====================== */
+	
+	return IREJECT;
 }
 
 
@@ -29,7 +37,8 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
 int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	float a_xmin = bba->m_min[0];
+	 
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
