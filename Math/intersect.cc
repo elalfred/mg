@@ -19,9 +19,8 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	float dist = pl->distance(bs->m_centre);
 	dist-=bs->getRadius();
-	printf ("distancia ---> %f",dist);
 	int respuesta;
-	if (abs(dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
+	if (fabs(dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
 	else if (dist > Constants::distance_epsilon) respuesta = IREJECT;
 	else respuesta = -IREJECT;
 
@@ -46,9 +45,8 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 		coord_a_max = bba->m_max[i];
 		coord_b_min = bbb->m_min[i];
 		coord_b_max = bbb->m_max[i];
-		
-		interseccion = (coord_b_min <= coord_a_min && coord_b_max >= coord_a_min) ||
-					   (coord_b_min <= coord_a_max && coord_b_max >= coord_a_max);
+
+		interseccion = (coord_a_min <= coord_b_max) && (coord_b_min <= coord_a_max) ;
 		i++;
 	}
 
@@ -64,7 +62,7 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	float max_simil = 0, aux;
+	float max_simil = 0, aux , prod;
 	Vector3 lista_diag[4], temp;
 	lista_diag[0] = (theBBox->m_max - theBBox->m_min);
 	int max= 0;
@@ -79,10 +77,12 @@ int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 		}
 		
 		//calculo y almacenamiento de la máxima similitud junto con su indice
-		aux= thePlane->m_n.dot( temp ) ;
-		aux /= (thePlane->m_n.lengthSquare() * temp.lengthSquare());
-		if (  abs(aux)  >  max_simil){
-			max_simil= abs(aux);
+		aux= fabs(thePlane->m_n.dot( temp )) ;
+		prod = (thePlane->m_n.length() * temp.length());
+		//COMPROBAR QUE NO ES CERO -> CON EL ISZERO()
+		aux /= (prod > Constants::distance_epsilon)? prod : Constants::distance_epsilon ;
+		if (  aux  >  max_simil){
+			max_simil= aux;
 			max= i;
 		}
 	}
@@ -96,13 +96,27 @@ int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 		n_max[ max ]= n_min[ max ];
 		n_min[ max ]= theBBox->m_max[ max ];
 	}
-	float dist_Pl_min , dist_PL_max;
+	int pos_min , pos_max;
 
-	dist_Pl_min = thePlane->signedDistance(n_min);
-	dist_PL_max = thePlane->signedDistance(n_max);
+	// funcion which_side que comprueba a que lado del plano esta
+	pos_min = thePlane->whichSide(n_min);
+	pos_max = thePlane->whichSide(n_max);
+
+	int resultado;
+
+	if ((pos_max == 0 || pos_min == 0 ) || 
+		(pos_max == 1 && pos_min == -1)	||								
+		(pos_max == -1 && pos_min == 1)	)
+		resultado = IINTERSECT;
+		
+	else if((pos_max == 1 && pos_min == 1)) resultado = IREJECT;
+	else resultado = -IREJECT;
+
+	return resultado;
 
 	//revisar creo que falta calcular los vertices con respecto al plano
 	/* =================== END YOUR CODE HERE ====================== */
+	
 }
 
 // Test if two BSpheres intersect.
