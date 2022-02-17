@@ -17,11 +17,13 @@
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	float dist = pl->distance(bs->m_centre);
-	dist-=bs->getRadius();
+	float rad = pow(bs->getRadius(),2);
+	float dist = pow((pl->distance(bs->m_centre)),2);
+	printf(" %f", rad);
+	printf(" %f", dist);
 	int respuesta;
-	if (fabs(dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
-	else if (dist > Constants::distance_epsilon) respuesta = IREJECT;
+	if (fabs(rad-dist) < Constants::distance_epsilon) respuesta = IINTERSECT;
+	else if (dist > rad) respuesta = IREJECT;
 	else respuesta = -IREJECT;
 
 	/* =================== END YOUR CODE HERE ====================== */

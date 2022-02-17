@@ -47,9 +47,16 @@ void Trfm3D::clone( const Trfm3D *T ) {	clone(*T); }
 Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 	Vector3 res;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
-	/* =================== END YOUR CODE HERE ====================== */
+	res = Vector3::ZERO;
+	for(int i = 0 ; i<3; i++){
+		res[0]+= (m_c1[i] * P[0]);
+		res[1]+= (m_c2[i] * P[1]);
+		res[2]+= (m_c3[i] * P[2]);
+	}
+	res*= m_scl;
+	res+= m_tr;
 	return res;
+	/* =================== END YOUR CODE HERE ====================== */
 }
 
 // @@ TODO. Transform a vector.
@@ -63,9 +70,15 @@ Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 Vector3 Trfm3D::transformVector(const Vector3 & V) const {
 	Vector3 res;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
-	/* =================== END YOUR CODE HERE ====================== */
+	res = Vector3::ZERO;
+	for(int i = 0 ; i<3; i++){
+		res[0]+= (m_c1[i] * V[0]);
+		res[1]+= (m_c2[i] * V[1]);
+		res[2]+= (m_c3[i] * V[2]);
+	}
+	res*= m_scl;
 	return res;
+	/* =================== END YOUR CODE HERE ====================== */
 }
 
 Vector3 Trfm3D::transformNormal(const Vector3 & N) const {
@@ -418,7 +431,17 @@ void Trfm3D::setScale(float scale ) {
 
 void Trfm3D::setRotAxis(const Vector3 & V, const Vector3 & P, float angle ) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	Trfm3D T1,T2,T3;
+	T1 = Trfm3D();
+	T2= Trfm3D();
+	T3= Trfm3D();
+	T1.setTrans(-1*P);
+	T2.setRotVec(V,angle);
+	T3.setTrans(P);
+	T3.add(T2);
+	T3.add(T1);
+	this->clone(T3);
+	//;
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
