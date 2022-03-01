@@ -271,12 +271,13 @@ void Node::addChild(Node *theChild) {
 	if (m_gObject) {
 		/* =================== PUT YOUR CODE HERE ====================== */
 		// node has a gObject, so print warning
-
+		printf("este nodo tiene Gobject tremendo warning pa ti");
 		/* =================== END YOUR CODE HERE ====================== */
 	} else {
 		/* =================== PUT YOUR CODE HERE ====================== */
 		// node does not have gObject, so attach child
-
+		theChild->cloneParent(this);
+		this->m_children.push_back(theChild);
 		/* =================== END YOUR CODE HERE ====================== */
 
 	}
@@ -388,7 +389,7 @@ void Node::updateGS() {
 // RenderState *rs = RenderState::instance();
 //
 // rs->addTrfm(RenderState::modelview, T); // Add T transformation to modelview
-// rs->push(RenderState::modelview); // push current matrix into modelview stack
+// rs->push(RenderState::modelview);// push current matrix into modelview stack
 // rs->pop(RenderState::modelview); // pop matrix from modelview stack to current
 //
 // gobj->draw(); // draw geometry object (gobj)
@@ -399,7 +400,7 @@ void Node::updateGS() {
 //    iterate through children.
 
 void Node::draw() {
-
+	
 	ShaderProgram *prev_shader = 0;
 	RenderState *rs = RenderState::instance();
 
@@ -416,9 +417,18 @@ void Node::draw() {
 		BBoxGL::draw( m_containerWC );
 
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	
+	rs->push(RenderState::modelview);
+	for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+        auto theChild = *it;
+		rs->addTrfm(RenderState::modelview,m_placement);
+		if(theChild == 0) {
+			theChild->m_gObject->draw();
+		}else theChild->draw();
+    }
+	rs->pop(RenderState::modelview);
 	/* =================== END YOUR CODE HERE ====================== */
-
+	
 	if (prev_shader != 0) {
 		// restore shader
 		rs->setShader(prev_shader);
