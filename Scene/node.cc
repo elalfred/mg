@@ -276,7 +276,7 @@ void Node::addChild(Node *theChild) {
 	} else {
 		/* =================== PUT YOUR CODE HERE ====================== */
 		// node does not have gObject, so attach child
-		theChild->cloneParent(this);
+		theChild->m_parent = this;
 		this->m_children.push_back(theChild);
 		/* =================== END YOUR CODE HERE ====================== */
 
@@ -418,15 +418,22 @@ void Node::draw() {
 
 	/* =================== PUT YOUR CODE HERE ====================== */
 	
+	// PRIMER COMMIT
 	rs->push(RenderState::modelview);
-	for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
-        auto theChild = *it;
-		rs->addTrfm(RenderState::modelview,m_placement);
-		if(theChild == 0) {
-			theChild->m_gObject->draw();
-		}else theChild->draw();
-    }
+	rs->addTrfm(RenderState::modelview, m_placement);
+	
+	/// si es nodo hoja, tengo que dibujar
+	if (m_gObject) {
+		m_gObject->draw();
+	} else {
+		for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+			auto theChild = *it;
+			theChild->draw();
+		}
+	}
+
 	rs->pop(RenderState::modelview);
+
 	/* =================== END YOUR CODE HERE ====================== */
 	
 	if (prev_shader != 0) {
@@ -467,7 +474,8 @@ void Node::frustumCull(Camera *cam) {
 //    iterate through children.
 
 const Node *Node::checkCollision(const BSphere *bsph) const {
-	if (!m_checkCollision) return 0;
+	if (!m_checkCollision) 
+		return 0;
 	/* =================== PUT YOUR CODE HERE ====================== */
 
 	/* =================== END YOUR CODE HERE ====================== */

@@ -180,8 +180,12 @@ void  Camera::lookAt(const Vector3 & E,
 					 const Vector3 & up) {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	Vector3 aux = E-at;
-	m_D = aux/aux.length();
-	m_R = (up/up.length()).cross(m_D);
+
+    /// m_D = aux.normalize();
+
+	m_D = aux.normalize();
+	aux= up;
+	m_R = aux.normalize().cross(m_D);
 	m_U = m_D.cross(m_R);
 	m_E= E;
 	/* =================== END YOUR CODE HERE ====================== */
