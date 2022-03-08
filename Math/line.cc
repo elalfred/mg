@@ -40,7 +40,8 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 Vector3 Line::at(float u) const {
 	Vector3 res;
 	/* =================== PUT YOUR CODE HERE ====================== */
-	res*=u;
+	res=m_O;
+	res+=u*m_d;
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }

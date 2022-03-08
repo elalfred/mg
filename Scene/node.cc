@@ -277,6 +277,7 @@ void Node::addChild(Node *theChild) {
 		/* =================== PUT YOUR CODE HERE ====================== */
 		// node does not have gObject, so attach child
 		theChild->m_parent = this;
+		theChild->updateGS();
 		this->m_children.push_back(theChild);
 		/* =================== END YOUR CODE HERE ====================== */
 
@@ -362,7 +363,13 @@ void Node::updateBB () {
 
 void Node::updateWC() {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	if ( m_parent != 0 ){
+		m_placementWC->add(m_placement);
+	}
+	for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+		auto theChild = *it;
+		theChild->updateWC();
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -376,7 +383,7 @@ void Node::updateWC() {
 
 void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	this->updateWC();
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -419,6 +426,7 @@ void Node::draw() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	
 	// PRIMER COMMIT
+	/*
 	rs->push(RenderState::modelview);
 	rs->addTrfm(RenderState::modelview, m_placement);
 	
@@ -433,6 +441,21 @@ void Node::draw() {
 	}
 
 	rs->pop(RenderState::modelview);
+	*/
+
+	//SEGUNDO COMMIT
+	if (m_gObject) {
+		rs->push(RenderState::modelview);
+		rs->addTrfm(RenderState::modelview, m_placement);
+		m_gObject->draw();
+		rs->pop(RenderState::modelview);
+	} else {
+		for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+			auto theChild = *it;
+			theChild->draw();
+		}
+	}
+	
 
 	/* =================== END YOUR CODE HERE ====================== */
 	
