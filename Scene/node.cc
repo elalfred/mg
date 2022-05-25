@@ -276,9 +276,9 @@ void Node::addChild(Node *theChild) {
 	} else {
 		/* =================== PUT YOUR CODE HERE ====================== */
 		// node does not have gObject, so attach child
-		theChild->m_parent = this;
-		theChild->updateGS();
+		theChild->m_parent = this;	
 		this->m_children.push_back(theChild);
+		this->updateGS();
 		/* =================== END YOUR CODE HERE ====================== */
 
 	}
@@ -307,6 +307,8 @@ void Node::detach() {
 
 void Node::propagateBBRoot() {
 	/* =================== PUT YOUR CODE HERE ====================== */
+	this->updateBB();
+	if(this->m_parent!=0) this->m_parent->propagateBBRoot();
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -340,7 +342,20 @@ void Node::propagateBBRoot() {
 
 void Node::updateBB () {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	
+	if (m_gObject) {
+		printf("Termino de profundizar %s\n",m_name.c_str());
+		this->m_containerWC->clone(m_gObject->getContainer());
+		this->m_containerWC->transform(this->m_placementWC);
+		
+	}else{
+		printf("Entro a hijos %s\n",m_name.c_str());
+		this->m_containerWC->init();
+		for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+			auto theChild = *it;
+			this->m_containerWC->include(theChild->m_containerWC);
+		}
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -363,13 +378,18 @@ void Node::updateBB () {
 
 void Node::updateWC() {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	if ( m_parent != 0 ){
+	if ( m_parent == 0 ){
+		m_placementWC->clone(m_placement);
+	}else{
+		m_placementWC->clone(m_parent->m_placementWC);
 		m_placementWC->add(m_placement);
 	}
 	for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
 		auto theChild = *it;
 		theChild->updateWC();
 	}
+	this->updateBB();
+	
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -384,6 +404,7 @@ void Node::updateWC() {
 void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	this->updateWC();
+	if(this->m_parent!=0) this->m_parent->propagateBBRoot();
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -446,7 +467,7 @@ void Node::draw() {
 	//SEGUNDO COMMIT
 	if (m_gObject) {
 		rs->push(RenderState::modelview);
-		rs->addTrfm(RenderState::modelview, m_placement);
+		rs->addTrfm(RenderState::modelview, m_placementWC);
 		m_gObject->draw();
 		rs->pop(RenderState::modelview);
 	} else {
@@ -481,7 +502,11 @@ void Node::setCulled(bool culled) {
 
 void Node::frustumCull(Camera *cam) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
+		Node *theChild = *it;
+		m_isCulled = (cam->checkFrustum(theChild->m_containerWC,0)==1);
+		theChild->setCulled(m_isCulled);
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -497,10 +522,18 @@ void Node::frustumCull(Camera *cam) {
 //    iterate through children.
 
 const Node *Node::checkCollision(const BSphere *bsph) const {
-	if (!m_checkCollision) 
-		return 0;
+	if (!m_checkCollision)  return 0;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	const Node *res;
+	int n = 0;
+	for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
+		if(n==0){
+			Node *theChild = *it;
+			n= BSphereBBoxIntersect(bsph,theChild->m_containerWC);
+			if(n) res= theChild;
+		}			
+	}
+	return (n==1)?res:0;
 	/* =================== END YOUR CODE HERE ====================== */
 }
 

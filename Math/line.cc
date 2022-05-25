@@ -30,7 +30,7 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 		m_d= Vector3::UNIT_Y;
 	}else{
 		m_O=A;
-		m_d=x;
+		m_d=x.normalize();
 	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -54,7 +54,8 @@ float Line::paramDistance(const Vector3 & P) const {
 	float res = 0.0f;
 	/* =================== PUT YOUR CODE HERE ====================== */
 	Vector3 x= P-m_O;
-	res = m_d.dot(x)/m_d.dot(m_d);
+	if (m_d.isZero()) return 0.0;
+	res = m_d.dot(x)/ m_d.dot(m_d);;
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
