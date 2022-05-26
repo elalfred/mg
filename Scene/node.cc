@@ -344,12 +344,11 @@ void Node::updateBB () {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	
 	if (m_gObject) {
-		printf("Termino de profundizar %s\n",m_name.c_str());
 		this->m_containerWC->clone(m_gObject->getContainer());
 		this->m_containerWC->transform(this->m_placementWC);
 		
 	}else{
-		printf("Entro a hijos %s\n",m_name.c_str());
+
 		this->m_containerWC->init();
 		for(auto it = m_children.begin(), end = m_children.end(); it != end; ++it) {
 			auto theChild = *it;
@@ -502,13 +501,17 @@ void Node::setCulled(bool culled) {
 
 void Node::frustumCull(Camera *cam) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	int cull = m_isCulled = cam->checkFrustum(m_containerWC,0);
+	int cull = cam->checkFrustum(m_containerWC,0);
 	switch (cull){
 		case 1: this->setCulled(true);
+			printf("Corto de la escena %s y todos sus hijops\n",m_name.c_str());
 			break;
 		case -1: this->setCulled(false);
+			printf("Dejo en la escena %s y todos sus hijos\n",m_name.c_str());
 			break;
 		case 0: 
+			m_isCulled=0;
+			printf("Interseca %s y sus hijos:\n",m_name.c_str());
 			for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
 				Node *theChild = *it;
 				theChild->frustumCull(cam);

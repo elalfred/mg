@@ -35,4 +35,7 @@ varying vec2 f_texCoord;
 
 void main() {
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);
+	for(int i =0; i< active_lights_n; i++){
+
+	}
 }

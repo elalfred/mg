@@ -89,7 +89,7 @@ void Light::placeScene() {
 	Trfm3D &modelView = rs->top(RenderState::modelview);
 
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
