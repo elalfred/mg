@@ -314,15 +314,13 @@ void  Camera::arcLeftRight(float angle) {
 int Camera::checkFrustum(const BBox *theBBox,
 						 unsigned int *planesBitM) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	int res=-1;
+	bool intersect=false;
 	for (int i = 0; i<6; i++){
-		if(res!=1){
-			int inter = BBoxPlaneIntersect(theBBox,this->m_fPlanes[i]);
-			if (res== -1) res= inter;
-			else if ( inter ==1) res=1;
-		}
+		int res = BBoxPlaneIntersect(theBBox,this->m_fPlanes[i]);
+		if (res ==1) return IREJECT;
+		else if(!intersect) intersect = res == 0;
 	}
-	return res; // BBox is fully inside the frustum
+	return (intersect)?0:-IREJECT; // BBox is fully inside the frustum
 	/* =================== END YOUR CODE HERE ====================== */
 }
 

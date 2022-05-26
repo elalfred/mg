@@ -502,10 +502,17 @@ void Node::setCulled(bool culled) {
 
 void Node::frustumCull(Camera *cam) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-	for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
-		Node *theChild = *it;
-		m_isCulled = (cam->checkFrustum(theChild->m_containerWC,0)==1);
-		theChild->setCulled(m_isCulled);
+	int cull = m_isCulled = cam->checkFrustum(m_containerWC,0);
+	switch (cull){
+		case 1: this->setCulled(true);
+			break;
+		case -1: this->setCulled(false);
+			break;
+		case 0: 
+			for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
+				Node *theChild = *it;
+				theChild->frustumCull(cam);
+			}break;
 	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -525,15 +532,20 @@ const Node *Node::checkCollision(const BSphere *bsph) const {
 	if (!m_checkCollision)  return 0;
 	/* =================== PUT YOUR CODE HERE ====================== */
 	const Node *res;
-	int n = 0;
-	for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
-		if(n==0){
-			Node *theChild = *it;
-			n= BSphereBBoxIntersect(bsph,theChild->m_containerWC);
-			if(n) res= theChild;
-		}			
+	int n= BSphereBBoxIntersect(bsph,m_containerWC);
+	if (n==0){
+		if (m_gObject) return this;
+		else {
+			for(auto it = m_children.begin(), end = m_children.end();it != end; ++it) {
+				Node *theChild = *it;
+				const Node *res = theChild->checkCollision(bsph);
+				if (res!=0) return res;
+			}
+		}
 	}
-	return (n==1)?res:0;
+	
+	
+	return 0;
 	/* =================== END YOUR CODE HERE ====================== */
 }
 

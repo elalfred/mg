@@ -22,9 +22,8 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	printf(" %f", rad);
 	printf(" %f", dist);
 	int respuesta;
-	float abdist= fabs(dist);
-	if (abdist-rad < Constants::distance_epsilon  || (fabs(dist)< rad )) respuesta = IINTERSECT;
-	else if (abdist > rad && dist<0 ) respuesta = -IREJECT;
+	if (fabs(dist)-rad < Constants::distance_epsilon ) respuesta = IINTERSECT;
+	else if ( dist<0 ) respuesta = -IREJECT;
 	else respuesta = IREJECT;
 
 	/* =================== END YOUR CODE HERE ====================== */

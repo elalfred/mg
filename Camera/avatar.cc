@@ -47,9 +47,8 @@ bool Avatar::advance(float step) {
 	if (m_walk){
 		m_cam->walk(step);
 	}else m_cam->fly(step);
-	//que tamaño tiene el radio????????????????????
-	const BSphere s = BSphere( m_cam->getPosition(),1);
-	bool choque = rootNode->checkCollision(&s)!=0;
+	m_bsph->setPosition(m_cam->getPosition());
+	bool choque = rootNode->checkCollision(m_bsph)!=0;
 	if(choque){
 		if(m_walk){
 			m_cam->walk(-step);
