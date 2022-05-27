@@ -106,7 +106,6 @@
             "spdir" : [0, 0, -1],
             "exp" : 40,
             "cutoff" : 10.0,
-            "attenuation" : [0.0, 0.0, 0.0],
             "switched" : 0
         }
     ],

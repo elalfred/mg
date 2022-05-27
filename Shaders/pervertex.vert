@@ -29,13 +29,17 @@ attribute vec3 v_position; // Model space
 attribute vec3 v_normal;   // Model space
 attribute vec2 v_texCoord;
 
-varying vec4 f_color;
+varying vec4 f_color; //son variables de salida para el vertex shader 
 varying vec2 f_texCoord;
 
 
 void main() {
-	gl_Position = modelToClipMatrix * vec4(v_position, 1);
-	for(int i =0; i< active_lights_n; i++){
 
+	for(int i =0; i< active_lights_n; i++){
+		const vec4  
 	}
+
+	f_texCoord = v_texCoord;
+	//lo ultimo de to 
+	gl_Position = modelToClipMatrix * vec4(v_position, 1);
 }
